@@ -1,0 +1,225 @@
+:icons: font
+:twitter-tag: UDE
+:conference-tag:
+:talk-tag: Intro Gradle
+:linkattrs:
+
+ifndef::partials[:partials: partials]
+
+include::{partials}/footer.ad[]
+
+== Introducción a Gradle
+
+[NOTE.speaker]
+====
+
+Contenido de la presentación:
+
+* ¿Qué es Gradle?
+* Building Blocks – Projects and Tasks
+* Usando Plugins
+* Administración de Dependencias
+
+====
+
+== !
+image::gradle-logo.png[background, size=auto]
+
+== ¿Qué es Gradle?
+
+Gradle es una herramienta open source enfocada en la flexibilidad y el rendimiento. Los scripts de Gradle están escritos en DSLs Groovy o Kotlin. Actualmente es la herramienta por default para la construcción de proyectos Android.
+
+[NOTE.speaker]
+====
+
+DSL: Un lenguaje de dominio específico (en inglés domain-specific language, DSL) es un lenguaje de programación o especificación dedicado a resolver un problema en particular, representar un problema específico y proveer una técnica para solucionar una situación particular.
+
+Fuente: https://en.wikipedia.org/wiki/Domain-specific_language
+
+Apache Groovy: Es un lenguaje de programación orientado a objetos implementado sobre la plataforma Java.
+
+Fuente: https://en.wikipedia.org/wiki/Apache_Groovy
+====
+
+== Building Blocks – Projects and Tasks
+
+En Gradle, los Builds consisten en uno o más proyectos. Un proyecto puede tener tener una o más tareas.
+
+Un proyecto Gradle puede ser ensamblado en un jar, war, zip o apk.
+
+== Tasks
+
+Una tarea es una única pieza de trabajo. Puede incluir compilar clases, o crear y publicar archivos web.
+
+Podemos definir una tarea con:
+
+[source,groovy]
+----
+task hello {
+    doLast {
+        println 'UDE'
+    }
+}
+----
+
+== Tasks
+
+Si ejecutamos el comando `gradle -q hello` en la misma ubicación donde esta el archivo build.gradle, veremos la siguiente salida en la consola.
+
+[source,shell]
+----
+UDE
+----
+
+== Tasks
+
+En los scripts Gradle podemos usar libremente la sintaxis de Groovy:
+
+[source,groovy]
+----
+task toLower {
+    doLast {
+        String someString = 'HOLA DESDE UDE'
+        println "Original: "+ someString
+        println "Lower case: " + someString.toLowerCase()
+    }
+}
+----
+
+== Dependencia entre Tasks
+Podemos definir tareas que dependan de otras tareas. La dependencia la definimos pasando `dependsOn: taskName` como argumento en la definición de las tareas:
+
+== Dependencia entre Tasks
+[source,groovy]
+----
+task helloGradle {
+    doLast {
+        println 'Hello Gradle!'
+    }
+}
+task fromUde(dependsOn: helloGradle) {
+    doLast {
+        println "I'm from UDE"
+    }
+}
+----
+
+== Añadiendo comportamiento a las Tasks
+
+Podemos usar las acciones `doLast` o `doFirst` para definir comportamiento adicional a las Tasks.
+
+== Añadiendo comportamiento a las Tasks
+
+[source,groovy]
+----
+task helloUde {
+    doLast {
+        println 'I will be executed second'
+    }
+}
+
+helloUde.doFirst {
+    println 'I will be executed first'
+}
+----
+
+== Añadiendo comportamiento a las Tasks
+También podemos agregarle propiedades específicas a las tareas:
+
+[source,groovy]
+----
+task ourTask {
+    ext.theProperty = "theValue"
+}
+----
+
+== Gradle plugins
+
+Los plugins nos proveen funcionales adicionales a las que el core de Gradle nos ofrece. Con ellos podemos compilar código `JavaCompile`, o construir aplicaciones Android.
+
+Para usar la lógica encapsulada en los plugin Gradle necesita ejecutar dos pasos `resolve` y `apply`.
+
+[NOTE.speaker]
+====
+`resolve` un plugin quiere decir encontrar la versión correcta del jar que contiene el plugin y añadirlo al classpath.
+
+`apply` a plugin quiere decir ejecutar el plugin en el proyecto donde lo aplicamos.
+====
+
+== Gradle plugins
+Existen plugins que son core, esto es, que vienen con la distribución de Gradle.
+
+También podemos encontrar plugins de la comunidad o incluso podemos desarrollar los nuestros.
+
+== Usando Gradle plugins
+
+Los plugins core los podemos agregar a nuestro proyecto con:
+
+[source,groovy]
+----
+plugins {
+    id 'java'
+}
+----
+
+Donde el `id` es el nombre del plugin.
+
+== Usando Gradle plugins
+
+Para versiones community necesitamos especificar la versión:
+
+[source,groovy]
+----
+plugins {
+    id 'com.jfrog.bintray' version '1.8.5'
+}
+----
+
+== Usando Gradle plugins
+
+En versiones antiguas de Gradle la sintaxis era un poco diferente:
+[source,groovy]
+----
+apply plugin: 'war'
+----
+En estos casos tenemos que agregar el plugin al classpath usando el bloque `buildscript{}`
+
+== Usando Gradle plugins
+[source,groovy]
+----
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.shipkit:shipkit:2.3.1"
+    }
+}
+apply plugin: "org.shipkit.bintray-release"
+----
+
+== Administración de dependencias
+
+Gradle tiene un sistema de administración de dependencias muy flexible.
+
+Las prácticas que siguen son versionado, versionado dinámico, resolución de conflictos y manejo de dependencias transitivas.
+
+== Configuración de dependencias
+
+Las dependencias son agrupadas según diferentes configuraciones. Una configuración tiene un nombre y puede extender de otra.
+
+Si aplicamos el plugin Java, tendremos por ejemplo `implementation`, `testImplementation`.
+
+== Configuración de dependencias
+Para agregarlas usamos el bloque `dependencies`, por ejemplo:
+[source,groovy]
+----
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.6.2"
+}
+----
+
+include::{partials}/self.ad[]
