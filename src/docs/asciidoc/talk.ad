@@ -86,8 +86,27 @@ task toLower {
 }
 ----
 
+== Tasks
+O la de Kotlin:
+
+[source,kotlin]
+----
+task("toLower") {
+  doLast {
+    val someString = "HOLA DESDE UDE"
+    println("Original: $someString")
+    println("Lower case: ${someString.toLowerCase()}")
+  }
+}
+----
+
+[NOTE.speaker]
+====
+Esta tarea puede ser ejecutada con `gradle -b build.gradle.kts -t toLower`
+====
+
 == Dependencia entre Tasks
-Podemos definir tareas que dependan de otras tareas. La dependencia la definimos pasando `dependsOn: taskName` como argumento en la definición de las tareas:
+Podemos definir tareas que dependan de otras tareas. La dependencia la definimos pasando `dependsOn: taskName` como argumento en la definición de las tareas.
 
 == Dependencia entre Tasks
 [source,groovy]

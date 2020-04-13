@@ -16,3 +16,11 @@ task("fromUDE") {
     println("I'm from UDE")
   }
 }
+
+task("toLower") {
+  doLast {
+    val someString = "HOLA DESDE UDE"
+    println("Original: $someString")
+    println("Lower case: ${someString.toLowerCase()}")
+  }
+}
